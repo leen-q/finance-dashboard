@@ -1,0 +1,29 @@
+@if (groupedData()) {
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Коротка інформація</h1>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Рік-Місяць</th>
+                <th>Кількість виданих кредитів</th>
+                <th>Середня сума видачі кредитів</th>
+                <th>Загальна сума виданих кредитів</th>
+                <th>Загальна сума нарахованих відсотків</th>
+                <th>Кількість повернених кредитів</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (key of (groupedData() | keyvalue); track key) {
+            <tr>
+                <td>{{ key.key }}</td>
+                <td>{{ key.value.totalLoans }}</td>
+                <td>{{ key.value.averageAmount | currency }}</td>
+                <td>{{ key.value.totalAmount | currency }}</td>
+                <td>{{ key.value.totalInterest | currency }}</td>
+                <td>{{ key.value.returnedLoans }}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+}

@@ -1,0 +1,66 @@
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Загальна таблиця</h1>
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label>Дата видачі з:</label>
+            <input type="date" id="issuance-start-date" class="form-control form-control-sm"
+                [(ngModel)]="issuanceStartDate" />
+            <label>по:</label>
+            <input type="date" id="issuance-end-date" class="form-control form-control-sm"
+                [(ngModel)]="issuanceEndDate" />
+        </div>
+
+        <div class="col-md-4">
+            <label>Дата фактичного повернення з:</label>
+            <input type="date" id="acrual-return-start-date" class="form-control form-control-sm"
+                [(ngModel)]="actualReturnStartDate" />
+            <label>по:</label>
+            <input type="date" id="acrual-return-end-date" class="form-control form-control-sm"
+                [(ngModel)]="actualReturnEndDate" />
+        </div>
+
+        <div class="checkbox col-md-4">
+            <label>Показати прострочені кредити: <input type="checkbox" id="overdue-checkbox"
+                    [(ngModel)]="showOverdue" /></label>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Кількість кредитів на сторінці:</label>
+        <select [(ngModel)]="itemsPerPage" (change)="changeItemsPerPage($any($event.target).value)" class="form-control form-control-sm">
+            @for (option of pageSizeOptions; track option) {
+                <option [value]="option">{{ option }}</option>
+            }
+        </select>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th>ID</th>
+                <th>Користувач</th>
+                <th>Дата видачі</th>
+                <th>Дата повернення</th>
+                <th>Дата фактичного повернення</th>
+                <th>Сума кредиту</th>
+                <th>Нараховані відсотки</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (loan of paginatedLoans(); track loan) {
+            <tr>
+                <td>{{ loan.id }}</td>
+                <td>{{ loan.user }}</td>
+                <td>{{ loan.issuance_date | date }}</td>
+                <td>{{ loan.return_date | date }}</td>
+                <td>{{ loan.actual_return_date| date }}</td>
+                <td>{{ loan.body }}</td>
+                <td>{{ loan.percent }}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <ngb-pagination [collectionSize]="filteredLoans().length" [(page)]="currentPage" [pageSize]="itemsPerPage()"
+        (pageChange)="currentPage.set($event)" [maxSize]="5"></ngb-pagination>
+</div>
