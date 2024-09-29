@@ -1,27 +1,61 @@
-# FinanceDashboard
+# Фінансовий дашборд
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.8.
+Цей проект представляє собою фінансовий дашборд, розроблений на базі Angular з використанням Bootstrap та RxJS/Signals. Дашборд дозволяє відстежувати та аналізувати фінансові дані, отримані з сервера. 
 
-## Development server
+## Запуск проекту
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+1. **Клонування репозиторію**:
 
-## Code scaffolding
+   ```bash
+   git clone https://github.com/leen-q/finance-dashboard.git
+   ```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+2. **Перехід до директорії проекту**:
 
-## Build
+   ```bash
+   cd finance-dashboard
+   ```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+3. **Встановлення залежностей**:
 
-## Running unit tests
+   ```bash
+   npm install
+   ```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+4. **Запуск проекту**:
 
-## Running end-to-end tests
+   ```bash
+   ng serve
+   ```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+5. **Відкриття в браузері**: Перейдіть за адресою `http://localhost:4200`.
 
-## Further help
+### Опис виконаного завдання
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+У процесі реалізації фінансового дашборду були виконані наступні етапи:
+
+1. **Створення структури проекту**: Використання Angular 17+ та налаштування середовища розробки, включаючи установку необхідних пакетів і залежностей.
+
+2. **Розробка навігаційної панелі**: Реалізовано панель навігації з двома посиланнями: "Загальна таблиця" та "Коротка інформація".
+
+3. **Інтеграція з API**: Реалізовано отримання даних з API за допомогою сервісу.
+
+4. **Реалізація таблиці з даними**: Створено таблицю, яка відображає отримані дані, та додано фільтри для:
+   - Періоду дат видачі кредиту.
+   - Періоду дат фактичного повернення кредиту.
+   - Прострочених кредитів.
+
+5. **Обчислення та відображення метрик**: На сторінці "Коротка інформація" реалізовано панель з метриками, що містить:
+   - Загальну кількість виданих кредитів.
+   - Середню суму видачі кредитів.
+   - Загальну суму виданих кредитів.
+   - Загальну суму нарахованих відсотків.
+   - Загальну кількість повернених кредитів.
+
+6. **Lazy loading та маршрутизація**: Реалізовано маршрутизацію з використанням Angular Router та lazy loading для оптимізації завантаження компонентів.
+
+## Технології
+
+- **Angular 17+**
+- **Bootstrap**
+- **RxJS/Signals**
