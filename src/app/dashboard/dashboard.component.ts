@@ -1,18 +1,20 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 import { LoanDataService } from '../services/loan-data.service';
-import { CommonModule } from '@angular/common';
 import { Loan } from '../models/loan';
 import { FormsModule } from '@angular/forms';
 import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
+import { catchError, of, Subject, takeUntil, tap } from 'rxjs';
+import { CurrencyPipe, DatePipe } from '@angular/common';
+import { LoanFilterService } from '../services/loan-filter.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgbPagination],
+  imports: [FormsModule, NgbPagination, DatePipe, CurrencyPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   loans = signal<Loan[]>([]);
   issuanceStartDate = signal<Date | null>(null);
   issuanceEndDate = signal<Date | null>(null);
@@ -24,50 +26,35 @@ export class DashboardComponent implements OnInit {
   itemsPerPage = signal<number>(10);
   pageSizeOptions = [5, 10, 20, 50];
 
-  constructor(private loanService: LoanDataService) { }
+  private unsubscribeNotifier$ = new Subject<void>();
+
+  constructor(private loanService: LoanDataService, private loanFilterService: LoanFilterService) { }
 
   ngOnInit(): void {
     this.fetchData();
   }
 
   fetchData(): void {
-    this.loanService.getData().subscribe({
-      next: (response) => {
+    this.loanService.getData().pipe(
+      tap((response) => {
         this.loans.set(response);
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         console.error('Error fetching data', error);
-      }
-    });
+        return of(null);
+      }),
+      takeUntil(this.unsubscribeNotifier$)
+    ).subscribe()
   }
 
   filteredLoans = computed(() => {
-    const issuanceStart = this.issuanceStartDate();
-    const issuanceEnd = this.issuanceEndDate();
-    const actualReturnStart = this.actualReturnStartDate();
-    const actualReturnEnd = this.actualReturnEndDate();
-    const overdue = this.showOverdue();
-
-    return this.loans().filter(loan => {
-      const issuanceDate = new Date(loan.issuance_date);
-      const actualReturnDate = loan.actual_return_date ? new Date(loan.actual_return_date) : null;
-      const returnDate = new Date(loan.return_date);
-
-      const isIssuanceInRange = (!issuanceStart || issuanceDate >= new Date(issuanceStart)) &&
-        (!issuanceEnd || issuanceDate <= new Date(issuanceEnd));
-
-      const isActualReturnInRange = (!actualReturnStart || (actualReturnDate && actualReturnDate >= new Date(actualReturnStart))) &&
-        (!actualReturnEnd || (actualReturnDate && actualReturnDate <= new Date(actualReturnEnd)));
-
-      const isOverdue = (actualReturnDate && actualReturnDate > returnDate) ||
-        (returnDate < new Date() && !actualReturnDate);
-
-      if (overdue) {
-        return isIssuanceInRange && isActualReturnInRange;
-      } else {
-        return isIssuanceInRange && isActualReturnInRange && !isOverdue;
-      }
-    });
+    return this.loanFilterService.filterLoans(
+      this.loans(),
+      this.issuanceStartDate(),
+      this.issuanceEndDate(),
+      this.actualReturnStartDate(),
+      this.actualReturnEndDate(),
+      this.showOverdue())
   });
 
   paginatedLoans = computed(() => {
@@ -83,6 +70,11 @@ export class DashboardComponent implements OnInit {
 
   onPageChange(): void {
     this.currentPage.set(1);
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribeNotifier$.next();
+    this.unsubscribeNotifier$.complete();
   }
 }
 

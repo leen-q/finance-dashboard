@@ -54,8 +54,8 @@
                 <td>{{ loan.issuance_date | date }}</td>
                 <td>{{ loan.return_date | date }}</td>
                 <td>{{ loan.actual_return_date| date }}</td>
-                <td>{{ loan.body }}</td>
-                <td>{{ loan.percent }}</td>
+                <td>{{ loan.body | currency }}</td>
+                <td>{{ loan.percent | currency }}</td>
             </tr>
             }
         </tbody>
